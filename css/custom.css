@@ -1,0 +1,22 @@
+
+/* PC,와 모바일 이미지 넣는 방법  */
+#added {
+    background-image: url(../img/ceo-careers.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    text-align: center;
+    height: 92.938rem;
+}
+
+/* section의 배경 변경 방법 */
+#main1 {
+  /* background-image: ; */
+}
+
+@media screen  and (max-width: 767px) {
+  #added {
+      background-image: url(../img/m-ceo-careers.jpg);
+      height: 60rem;
+  }
+}

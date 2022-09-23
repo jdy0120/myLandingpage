@@ -1,0 +1,25 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/scss/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/landFromEmail",
+        "function": "route"
+      },
+      {
+        "source": "/landFromContact",
+        "function": "route"
+      },
+      {
+        "source": "/landFromBanner",
+        "function": "route"
+      }
+    ]
+  }
+}

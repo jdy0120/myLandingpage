@@ -1,0 +1,19 @@
+.navbar .navbar-brand:last-child {
+  font-size: 1rem;
+}
+
+#listpage {
+  position: relative;
+}
+
+#listpage .loading {
+  width: 50px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#listpage table {
+  font-size: 15px;
+}

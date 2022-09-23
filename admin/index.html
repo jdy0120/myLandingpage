@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>관리자페이지</title>
+    <link href="index.css" rel="stylesheet">
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.3.0/firebase-ui-auth__ko.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.3.0/firebase-ui-auth.css" />
+    <script src="../config/firebase.js"></script>
+    <script>
+      firebase.initializeApp(config);
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            $('#listpage').removeClass('d-none');
+        } else {
+            history.replaceState(null, null, '/adminLogin');
+            location.reload();
+        }
+      });
+
+      var db = firebase.database();
+    </script>
+  </head>
+
+  <body>
+    <!-- 네비게이션 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">관리자페이지</a>
+        <a class="navbar-brand signout" href="#">로그아웃</a>
+      </div>
+    </nav>
+
+    <!-- 페이지 내용 -->
+    <div id="listpage" class="container d-none">
+      <div class="row">
+        <div class="col-md-12 col-lg-12">
+          <div class="card card-outline-secondary my-4">
+            <div class="card-header">
+              리스트
+            </div>
+            <div class="card-body" style="max-height: 70vh; overflow: scroll;">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th width="20%" scope="col">신청시간</th>
+                    <th width="15%" scope="col">이름</th>
+                    <th width="15%" scope="col">이메일</th>
+                    <th width="15%" scope="col">전화번호</th>
+                    <th width="35%" scope="col">메시지</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="users new d-none">
+                    <td class="createdTime"></td>
+                    <td class="name"></td>
+                    <td class="email"></td>
+                    <td class="phone"></td>
+                    <td class="msg"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Loading -->
+            <img class="loading" src="/img/loading.gif" alt="로딩" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">
+          Copyright &copy; <span class="year"></span> 제이알코딩연구소
+        </p>
+      </div>
+    </footer>
+
+    <script>
+        function sortObjToArray(obj, sortFunc) {
+          var sortable = [];
+          for (var k in obj)
+              sortable.push(obj[k]);
+          sortable.sort(sortFunc);
+          return sortable;
+        }
+
+        function initUsers() {
+          db.ref('users').once('value', function(snapshot) {
+            var $new = $('.users.new');
+            var usersDataObj = snapshot.val();
+
+            var sorted = sortObjToArray(usersDataObj, function(a, b) {
+              return b.createdTime - a.createdTime;
+            });
+
+            for (var i = 0; i < sorted.length; i++) {
+              var $cloned = $new.clone(true);
+              $cloned.children('.createdTime').html(new Date(sorted[i].createdTime).toLocaleString());
+              $cloned.children('.name').html(sorted[i].name);
+              $cloned.children('.email').html(sorted[i].email);
+              $cloned.children('.phone').html(sorted[i].phone);
+              $cloned.children('.msg').html(sorted[i].msg);
+
+              $cloned.removeClass('d-none')
+                .removeClass('new')
+                .appendTo($new.parent());
+            }
+
+            $('.loading').hide();
+          });
+        }
+
+        function initFooterYear() {
+          $('footer .year').html(new Date().getFullYear());
+        }
+
+        function addSignout() {
+          $('.signout').on('click', function () {
+            var result = window.confirm('로그아웃 하시겠습니까?');
+
+            if (result) {
+              firebase.auth().signOut()
+              .then(function() {
+                
+              }).catch(function(error) {
+                alert('로그아웃을 실패했습니다');
+              });
+            }
+          });
+        }
+
+        (function ($) {
+          'use strict';
+          $(document).ready(function () {
+            addSignout();
+            initFooterYear();
+            initUsers();
+          });
+        }(jQuery));
+    </script>
+  </body>
+</html>
